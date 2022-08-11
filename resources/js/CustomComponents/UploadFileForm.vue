@@ -14,7 +14,6 @@
                 accepted-file-types="image/jpeg, image/png"
                 v-model="myFiles"
                 v-bind:credits="null"
-                v-on:init="handleFilePondInit"
                 v-bind:server="{
                     process: {
                         url: './upload',
@@ -54,7 +53,7 @@ export default {
     data: function () {
         return {
             // title: '',
-            // myFiles: [],
+            myFiles: FilePond.getFiles()[0].id,
         }
     },
     // methods: {
