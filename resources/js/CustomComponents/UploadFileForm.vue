@@ -1,20 +1,18 @@
 <template>
     <div id="app">
         <form
-            @submit.prevent="form.post('/save')"
+            @submit.prevent="onSubmit"
         >
             <input type="hidden" name="_token" :value="csrf_token">
             <Input v-model="form.title" name="title" id="title" placeholder="edit me"/>
             <file-pond
                 name="new_file"
                 ref="pond"
-                v-model="form.new_file"
 
                 v-bind:allow-multiple="false"
                 accepted-file-types="image/jpeg, image/png"
-
+                v-model="form.new_file"
                 v-bind:credits="null"
-                v-on:init="handleFilePondInit"
                 v-bind:server="{
                     process: {
                         url: './upload',
@@ -50,39 +48,20 @@ import Button from "@/Components/Button.vue";
 // import { reactive } from 'vue'
 // import { Inertia } from '@inertiajs/inertia'
 
-import {useForm} from '@inertiajs/inertia-vue3'
-
 export default {
-    setup () {
-        // const form = reactive({
-        //     title: null,
-        //     new_file: null,
-        // })
-        //
-        // function onSubmit() {
-        //     Inertia.post('/save', form)
-        // }
-        //
-        // return { form, submit }
-        const form = useForm({
-            title: null,
-            new_file: null,
-        })
-
-        return { form }
-    },
-    name: "UploadFileForm",
-    data: function () {
+    data() {
         return {
-            // title: '',
-            // myFiles: [],
+            form: {
+                title: null,
+                new_file: null,
+            },
         }
     },
-    // methods: {
-    //     onSubmit: function (e) {
-    //
-    //     }
-    // },
+    methods: {
+        onSubmit() {
+            this.$inertia.post('/save', this.form)
+        },
+    },
     components: {
         Button,
         Input,
