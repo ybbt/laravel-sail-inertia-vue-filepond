@@ -23,7 +23,7 @@
                         },
                     }
                 }"
-
+                v-on:processfiles="XXX"
             />
 
             <Button>Send</Button>
@@ -53,14 +53,18 @@ export default {
     data: function () {
         return {
             // title: '',
-            myFiles: FilePond.getFiles()[0].id,
+            // myFiles: FilePond.getFiles()[0].id,
         }
     },
-    // methods: {
-    //     onSubmit: function (e) {
-    //
-    //     }
-    // },
+    methods: {
+        onSubmit: function (e) {
+
+        },
+        XXX: function (){
+            let id = this.$refs.pond.getFile().serverId;
+            console.log(id);
+        }
+    },
     components: {
         Button,
         Input,
