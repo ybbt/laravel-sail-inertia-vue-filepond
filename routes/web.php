@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\TempFileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,9 +33,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/upload', [FileController::class, 'index'])->middleware('auth');
-Route::post('/upload', [FileController::class, 'upload'])->middleware('auth');
+Route::post('/upload', [TempFileController::class, 'upload'])->middleware('auth');
+Route::delete('/upload', [TempFileController::class, 'delete'])->middleware('auth');
 Route::post('/save', [FileController::class, 'store'])->middleware('auth');
-
+Route::post('/edit/{file}', [FileController::class, 'update'])->middleware('auth')->can('update', 'file');
+Route::delete('/delete/{file}', [FileController::class, 'destroy'])->middleware('auth')->can('delete', 'file');
 
 
 require __DIR__.'/auth.php';

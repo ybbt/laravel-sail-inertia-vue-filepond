@@ -25,10 +25,6 @@ class FileUploadController extends Controller
 //        ])->info($files);
     }
 
-    public function upload(Request $request){
-        //
-    }
-
     /**
      * Show the form for creating a new resource.
      *

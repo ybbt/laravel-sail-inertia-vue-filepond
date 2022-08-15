@@ -53,7 +53,7 @@ class FilePolicy
      */
     public function update(User $user, File $file)
     {
-//        return $user->id == $file->user_id;
+        return $user->id == $file->user_id;
     }
 
     /**
@@ -65,7 +65,7 @@ class FilePolicy
      */
     public function delete(User $user, File $file)
     {
-//        return $user->id == $post->user_id;
+        return $user->id == $file->user_id;
     }
 
     /**
