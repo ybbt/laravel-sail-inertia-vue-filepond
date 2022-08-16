@@ -20,7 +20,7 @@
                     name="new_file"
                     ref="pond"
                     v-bind:allow-multiple="false"
-                    accepted-file-types="image/jpeg, image/png"
+                    accepted-file-types="image/jpeg, image/png, video/*"
                     chunkUploads="false"
 
                     v-bind:credits="null"
