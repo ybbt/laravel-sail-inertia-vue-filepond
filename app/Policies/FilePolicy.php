@@ -53,7 +53,7 @@ class FilePolicy
      */
     public function update(User $user, File $file)
     {
-//        return $user->id == $file->user_id;
+        return $user->id == $file->user_id;
     }
 
     /**
@@ -65,7 +65,7 @@ class FilePolicy
      */
     public function delete(User $user, File $file)
     {
-//        return $user->id == $post->user_id;
+        return $user->id == $file->user_id;
     }
 
     /**
@@ -90,5 +90,17 @@ class FilePolicy
     public function forceDelete(User $user, File $file)
     {
         //
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function load(User $user, File $file)
+    {
+        return $user->id == $file->user_id;
     }
 }
