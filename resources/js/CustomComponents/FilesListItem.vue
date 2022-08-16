@@ -1,13 +1,14 @@
 <template>
     <div class="border border-gray-500 m-1 p-1">
         <h1 class="text-emerald-600">{{ file?.title }}</h1>
-        <div>{{ file?.filename }}</div>
+        <a :href="file?.url">{{ file?.filename }}</a>
         <div v-if="user_id === file.user_id" class="flex justify-end w-full">
             <div class="p-1">
                 <Button @click="onHandlerDelete">Delete</Button>
             </div>
+
             <div class="p-1">
-                <Button @click="onHandlerEditModal">Edit</Button>
+                <EditModal :file="file" :csrf_token="csrf_token"/>
             </div>
         </div>
     </div>
@@ -16,28 +17,23 @@
 
 <script>
 import Button from "@/Components/Button.vue";
+import NavLink from "@/Components/NavLink.vue";
 import UploadFileForm from "@/CustomComponents/UploadFileForm.vue";
+import EditModal from "@/CustomComponents/EditModal.vue";
 
 export default {
     name: "FilesListItem",
-    components: {Button, UploadFileForm},
+    components: {Button, NavLink, UploadFileForm, EditModal},
     props: {
         file: Object,
         csrf_token: String,
         user_id: Number,
     },
-    emits: ['isOpenModal'],
     methods: {
-        onHandlerEditModal: function (){
-            this.$emit('isOpenModal', {
-                isOpenModal: true,
-                file: this.file,
-            })
-        },
-        onHandlerDelete: function (){
+        onHandlerDelete: function () {
             this.$inertia.delete(`/delete/${this.file?.id}`);
         }
-    }
+    },
 }
 </script>
 

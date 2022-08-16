@@ -1,16 +1,14 @@
 <template>
-    <div class="container mx-auto">
+    <Button
+        @click="isOpen = true"
+        type="button"
+    >
+        Edit
+    </Button>
+    <div v-if="isOpen" class="container mx-auto">
         <div class="flex justify-center">
-<!--            <button-->
-<!--                @click="this.isOpen = true"-->
-<!--                class="px-6 py-2 text-white bg-blue-600 rounded shadow"-->
-<!--                type="button"-->
-<!--            >-->
-<!--                Open Model-->
-<!--            </button>-->
-
             <div
-                v-show="isOpen"
+
                 class="
                   absolute
                   inset-0
@@ -40,16 +38,7 @@
                         </svg>
                     </div>
                     <div class="mt-4">
-                        <UploadFileForm :isEdit="true" :file="file" :csrf_token="csrf_token" @isSendEditData="onClickClose"/>
-<!--                        <button-->
-<!--                            @click="onClickClose"-->
-<!--                            class="px-6 py-2 text-blue-800 border border-blue-600 rounded"-->
-<!--                        >-->
-<!--                            Cancel-->
-<!--                        </button>-->
-<!--                        <button class="px-6 py-2 ml-2 text-blue-100 bg-blue-600 rounded">-->
-<!--                            Save-->
-<!--                        </button>-->
+                        <UploadFileForm :isEdit="isEditForm" :file="file" :csrf_token="csrf_token" @isSendEditData="onClickClose"/>
                     </div>
                 </div>
             </div>
@@ -58,20 +47,22 @@
 </template>
 <script>
 import UploadFileForm from "@/CustomComponents/UploadFileForm.vue";
+import Button from "@/Components/Button.vue";
 export default {
     data() {
         return {
-            isOpen: this.isOpenProp,
+            isOpen: false,
+            isEditForm: false,
         };
     },
     props: {
-        isOpenProp:Boolean,
         file: Object,
         csrf_token: String,
     },
     watch: {
-        isOpenProp: function () {
-            this.isOpen = this.isOpenProp;
+        isOpen: function () {
+            this.isEditForm = !this.isEditForm;
+            // this.isEditForm = !!(this.isEditForm - 1);
         }
     },
     emits: ['isCloseModal'],
@@ -84,6 +75,7 @@ export default {
         }
     },
     components: {
+        Button,
         UploadFileForm,
     }
 };

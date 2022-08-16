@@ -91,4 +91,16 @@ class FilePolicy
     {
         //
     }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function load(User $user, File $file)
+    {
+        return $user->id == $file->user_id;
+    }
 }

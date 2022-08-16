@@ -1,10 +1,8 @@
 <template>
     <div id="app" class="min-w-[30rem] border border-gray-600 m-2">
-        <p v-if="errors.length">
+        <p v-if="pageErrors.length">
             <b class="text-red-900">Errors:</b>
-            <ul>
-                <InputError v-for="error in errors" :message="error"/>
-            </ul>
+            <InputError v-for="error in pageErrors" :message="error"/>
         </p>
         <form
             @submit.prevent="onSubmit"
@@ -14,12 +12,11 @@
                 <Label>Title</label>
                 <Input v-model="form.title" name="title" id="title" placeholder="edit me" class="w-full"/>
             </div>
-            <InputError v-if="createErrors?.title" :message="createErrors.title"/>
-
+            <InputError v-if="serverErrors?.title" :message="serverErrors.title"/>
             <div class="border border-gray-400 p-2 m-2">
-                <Label>File</label>
+                <Label>File</label><!--                    class="w-full"-->
                 <file-pond
-                    class="w-full"
+
                     name="new_file"
                     ref="pond"
                     v-bind:allow-multiple="false"
@@ -39,14 +36,24 @@
                             headers: {
                                 'X-CSRF-TOKEN':  csrf_token
                             },
-                        }
+                        },
+                        load: {
+                            url:'./load/',
+                            method: 'GET',
+                            headers: {
+                                'X-CSRF-TOKEN':  csrf_token
+                            },
+                        },
                     }"
-
+                    v-bind:files="myFiles"
+                    v-on:init="initHandler"
                 />
             </div>
-            <InputError v-if="createErrors?.new_file" :message="createErrors.new_file"/>
+            <InputError v-if="serverErrors?.new_file" :message="serverErrors.new_file"/>
 
-            <div class="p-2"><Button>Send</Button></div>
+            <div class="p-2">
+                <Button>Send</Button>
+            </div>
         </form>
     </div>
 
@@ -57,65 +64,85 @@
 import vueFilePond from "vue-filepond";
 import "filepond/dist/filepond.min.css";
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-// import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-// import FilePondPluginMediaPreview from "filepond-plugin-media-preview";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
 
 const FilePond = vueFilePond(
     FilePondPluginFileValidateType,
     FilePondPluginImagePreview,
-    // FilePondPluginMediaPreview,
-    // FilePondPluginImagePreview,
 );
 
 import Input from "@/Components/Input.vue";
 import InputError from "@/Components/InputError.vue";
 import Button from "@/Components/Button.vue";
 import Label from "@/Components/Label.vue";
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import {useForm} from "@inertiajs/inertia-vue3";
+
 
 export default {
-    data() {
-        return {
-            form: {
-                title: this.file?.title,
-                new_file: null,
-            },
-            errors: [],
-        }
-    },
     methods: {
+        initHandler() {
+            if (this.isEdit) {
+                console.log(this.file, "URL");
+                this.myFiles = [
+                    {
+                        source: this.file?.folder,
 
+                        options: {
+                            type: 'local',
+                        },
+                    },
+                ]
+            }
+        },
         onSubmit(event) {
 
-            console.log(this.$refs.pond.FileStatus);
+            console.log(this.file?.folder);
 
             let serverId;
-            if (this.$refs.pond.getFile()?.serverId){
+            if (this.$refs.pond.getFile()?.serverId) {
                 serverId = this.$refs.pond.getFile().serverId;
             }
 
             this.form.new_file = serverId;
 
-            this.errors = [];
-            if(!this.form.title) {
-                this.errors.push('The title field is required.');
+            this.pageErrors = [];
+            if (!this.form.title) {
+                this.pageErrors.push('The title field is required.');
             }
-            if(!this.form.new_file){
-                this.errors.push('The file field is required.');
+            if (!this.form.new_file) {
+                this.pageErrors.push('The file field is required.');
             }
 
-            if(this.errors.length > 0) return;
+            if (this.pageErrors.length > 0) return;
 
             if (!this.isEdit) {
-                this.$inertia.post('/save', this.form);
+                this.$inertia.post('/save', this.form, {
+                    errorBag: 'saveFile',
+                });
             } else {
-                this.$inertia.post(`/edit/${this.file?.id}`, this.form);
+                this.$inertia.post(`/edit/${this.file?.id}`, this.form, {
+                    errorBag: 'editFile',
+                });
             }
+
             this.$refs.pond.removeFile();
+            this.form.reset('title', 'new_file'),
             event.target.reset();
             this.$emit('isSendEditData');
         },
+    },
+
+    data() {
+
+        return {
+            form: useForm({
+                title: this.file?.title,
+                new_file: null,
+            }),
+            myFiles: [],
+            pageErrors: [],
+        }
     },
     components: {
         Button,
@@ -125,16 +152,12 @@ export default {
         FilePond,
     },
     props: {
-        createErrors: Object,
+        serverErrors: Object,
         csrf_token: String,
         file: Object,
         isEdit: Boolean
     },
-    watch: {
-        file: function () {
-            this.form.title = this.file?.title;
-        }
-    },
+
 };
 </script>
 

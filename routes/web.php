@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\FileController;
-use App\Http\Controllers\FileUploadController;
 use App\Http\Controllers\TempFileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -32,12 +31,18 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/upload', [FileController::class, 'index'])->middleware('auth');
-Route::post('/upload', [TempFileController::class, 'upload'])->middleware('auth');
-Route::delete('/upload', [TempFileController::class, 'delete'])->middleware('auth');
-Route::post('/save', [FileController::class, 'store'])->middleware('auth');
-Route::post('/edit/{file}', [FileController::class, 'update'])->middleware('auth')->can('update', 'file');
-Route::delete('/delete/{file}', [FileController::class, 'destroy'])->middleware('auth')->can('delete', 'file');
+
+Route::get('/upload', [FileController::class, 'index']);
+
+Route::group(['middleware' => 'auth'], function (){
+    Route::post('/upload', [TempFileController::class, 'upload']);
+    Route::delete('/upload', [TempFileController::class, 'delete']);
+    Route::post('/save', [FileController::class, 'store']);
+    Route::post('/edit/{file}', [FileController::class, 'update'])->can('update', 'file');
+    Route::delete('/delete/{file}', [FileController::class, 'destroy'])->can('delete', 'file');
+    Route::get('/load/{serverId}', [FileController::class, 'load']);
+});
+
 
 
 require __DIR__.'/auth.php';
